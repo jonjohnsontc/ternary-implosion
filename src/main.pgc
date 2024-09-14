@@ -1,0 +1,9 @@
+#include <stdio.h>
+
+int main() {
+  EXEC SQL CONNECT TO public@0.0.0.0:5432 USER postgres USING example;
+  printf("SQL connection executed\n");
+  EXEC SQL DISCONNECT ALL;
+  printf("SQL connected exited\n");
+  return 0;
+}
