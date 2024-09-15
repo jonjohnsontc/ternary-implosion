@@ -57,3 +57,7 @@ cc -o main main.o -L/usr/local/pgsql/lib -lecpg
 directory, and linked against the libecpg library
 - I'm running into some issues using postgres on my debian WSL instance, there is an
 unresolved symbol: UP
+- Turns out that I was linking to a version of libreadline on in my /usr/local/lib
+directory, which is based off of a manual installation of it (probably for stone
+cold SQL). I removed the shared library from the directory and ran `ldconfig` which
+found the system libreadline for postgres
