@@ -5,7 +5,7 @@
 -- NOTE that the SQL standard considers numeric columns without a scale to have 0 scale, so this DDL
 -- is probably not portable
 create table electricity_market (
-        weekday         smallint, 
+        "weekday"       smallint, 
         on_off          boolean, 
         he              smallint, 
         "date"          date,

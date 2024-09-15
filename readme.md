@@ -14,8 +14,8 @@ I wanted to put together a schema and exploration of how to really use EXPLAIN i
 
 ## Plan
 
-- [] Compile C file from pgc file
-- [] Connect to postgres db
+- [x] Compile C file from pgc file
+- [x=] Connect to postgres db
 - [] Execute Query and return results to stdout from C program
 - [] Get build error from syntatical error program
 
@@ -45,3 +45,15 @@ file via the ecpg documentation
 - Because I need to link to postgres' libraries, and include some of its header
 files, I think the best option is to run these against some "local" database,
 rather than adding a C compiler to the Docker image that I was previously using
+- The ecpg preprocessing + c source compilation steps were executed as follows:
+
+```bash
+ecpg src/main.pgc
+cc -I/usr/local/pgsql/include -c main.c
+cc -o main main.o -L/usr/local/pgsql/lib -lecpg
+```
+
+- Specifically, compilation requires the ECPG header files from Postrgres' include
+directory, and linked against the libecpg library
+- I'm running into some issues using postgres on my debian WSL instance, there is an
+unresolved symbol: UP
