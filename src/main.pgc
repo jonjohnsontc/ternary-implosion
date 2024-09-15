@@ -1,8 +1,39 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+EXEC SQL WHENEVER SQLWARNING SQLPRINT; 
+EXEC SQL WHENEVER SQLERROR CALL print_sqlca();
+
+void print_sqlca() {
+    fprintf(stderr, "==== sqlca ====\n");
+    fprintf(stderr, "sqlcode: %ld\n", sqlca.sqlcode);
+    fprintf(stderr, "sqlerrm.sqlerrml: %d\n", sqlca.sqlerrm.sqlerrml);
+    fprintf(stderr, "sqlerrm.sqlerrmc: %s\n", sqlca.sqlerrm.sqlerrmc);
+    fprintf(stderr, "sqlerrd: %ld %ld %ld %ld %ld %ld\n", sqlca.sqlerrd[0],sqlca.sqlerrd[1],sqlca.sqlerrd[2],
+                                                          sqlca.sqlerrd[3],sqlca.sqlerrd[4],sqlca.sqlerrd[5]);
+    fprintf(stderr, "sqlwarn: %d %d %d %d %d %d %d %d\n", sqlca.sqlwarn[0], sqlca.sqlwarn[1], sqlca.sqlwarn[2],
+                                                          sqlca.sqlwarn[3], sqlca.sqlwarn[4], sqlca.sqlwarn[5],
+                                                          sqlca.sqlwarn[6], sqlca.sqlwarn[7]);
+    fprintf(stderr, "sqlstate: %5s\n", sqlca.sqlstate);
+    fprintf(stderr, "===============\n");
+}
 
 int main() {
-  EXEC SQL CONNECT TO public@0.0.0.0:5432 USER postgres USING example;
+  EXEC SQL BEGIN DECLARE SECTION;
+    const char *pword = getenv("POSTGRES_PASSWORD");
+    long long int count;
+  EXEC SQL END DECLARE SECTION;  
+
+  if (pword == NULL) {
+    fprintf(stderr, "Env var not found\n");
+    exit(1);
+  }
+
+  EXEC SQL CONNECT TO ecpg_demo@localhost USER jon USING :pword;
   printf("SQL connection executed\n");
+  EXEC SQL SELECT count(*) INTO :count FROM electricity_market;
+  EXEC SQL COMMIT;
+  printf("Total number of rows in electricity_market: %d\n", count);
   EXEC SQL DISCONNECT ALL;
   printf("SQL connected exited\n");
   return 0;

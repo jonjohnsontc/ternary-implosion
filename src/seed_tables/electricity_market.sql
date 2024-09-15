@@ -1,0 +1,1 @@
+\copy electricity_market from '/home/jon/projects/ternary-implosion/raw_data.csv' csv header;

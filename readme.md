@@ -15,7 +15,7 @@ I wanted to put together a schema and exploration of how to really use EXPLAIN i
 ## Plan
 
 - [x] Compile C file from pgc file
-- [x=] Connect to postgres db
+- [x] Connect to postgres db
 - [] Execute Query and return results to stdout from C program
 - [] Get build error from syntatical error program
 
@@ -49,7 +49,7 @@ rather than adding a C compiler to the Docker image that I was previously using
 
 ```bash
 ecpg src/main.pgc
-cc -I/usr/local/pgsql/include -c main.c
+cc -I/usr/local/pgsql/include -c src/main.c
 cc -o main main.o -L/usr/local/pgsql/lib -lecpg
 ```
 
@@ -61,3 +61,36 @@ unresolved symbol: UP
 directory, which is based off of a manual installation of it (probably for stone
 cold SQL). I removed the shared library from the directory and ran `ldconfig` which
 found the system libreadline for postgres
+- Debian Postgres Wiki: <https://wiki.debian.org/PostgreSql>
+- I used the instructions in the Debian Postgres wiki to create a new pg user (jon),
+which matches the OS user on Debian, and then created a `ecpg_demo` db, which I've
+decided can serve as the db for this exercise
+
+```bash
+su - postgres
+createuser --pwprompt jon
+createdb -O jon ecpg_demo
+```
+
+- I'm having an issue copying the data from `raw_data.csv` into the table that I created
+via the sql/ddl script. Here's what happens:
+
+```bash
+psql ecpg_demo -f src/seed_tables/electricity_market.sql
+psql:src/seed_tables/electricity_market.sql:1: ERROR:  invalid input syntax for type numeric: "69,151.88"
+CONTEXT:  COPY electricity_market, line 2, column miso_rtload: "69,151.88"
+```
+
+- ChatGPT pointed me to leveraging sed or a similar tool to remove the commas,
+as they were causing the errors on read
+- To make things easier, I think I should either change the dataset or load the
+data in stages, maybe using some other table to make some edits before hitting
+it's final form
+- I was able to get the correct sed incantation to take the stream of data and
+insert it into the table I had created earlier
+
+```bash
+sed 's/"\(-\?[0-9]\{1,3\}\),\([0-9]\{3\}\)\(\.[0-9]*\)\?"/\1\2\3/g' raw_data.csv | psql ecpg_demo -c "\copy electricity_market FROM stdin CSV HEADER"
+```
+
+- Now that I have data together, I can put a query together using ecpg
