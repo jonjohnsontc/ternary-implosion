@@ -2,7 +2,8 @@
 #include <stdlib.h>
 
 EXEC SQL WHENEVER SQLWARNING SQLPRINT; 
-EXEC SQL WHENEVER SQLERROR CALL print_sqlca();
+EXEC SQL WHENEVER SQLERROR SQLPRINT;
+// EXEC SQL WHENEVER SQLERROR CALL print_sqlca();
 
 void print_sqlca() {
     fprintf(stderr, "==== sqlca ====\n");
@@ -21,6 +22,7 @@ void print_sqlca() {
 int main() {
   EXEC SQL BEGIN DECLARE SECTION;
     const char *pword = getenv("POSTGRES_PASSWORD");
+    const char *dbname = "unix:postgresql://localhost:5432/ecpg_demo";
     long long int count;
   EXEC SQL END DECLARE SECTION;  
 
@@ -29,7 +31,7 @@ int main() {
     exit(1);
   }
 
-  EXEC SQL CONNECT TO ecpg_demo@localhost USER jon USING :pword;
+  EXEC SQL CONNECT TO :dbname; 
   printf("SQL connection executed\n");
   EXEC SQL SELECT count(*) INTO :count FROM electricity_market;
   EXEC SQL COMMIT;
