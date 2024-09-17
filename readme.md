@@ -16,7 +16,7 @@ I wanted to put together a schema and exploration of how to really use EXPLAIN i
 
 - [x] Compile C file from pgc file
 - [x] Connect to postgres db
-- [] Execute Query and return results to stdout from C program
+- [x] Execute Query and return results to stdout from C program
 - [] Get build error from syntatical error program
 
 ## Log
@@ -94,3 +94,12 @@ sed 's/"\(-\?[0-9]\{1,3\}\),\([0-9]\{3\}\)\(\.[0-9]*\)\?"/\1\2\3/g' raw_data.csv
 ```
 
 - Now that I have data together, I can put a query together using ecpg
+- I was able to query the data in the database after some time spent troubleshooting
+- I kept trying to connect on port 5432 without realizing that postgres wasn't
+listening on that port
+- after running the below command, I was able to see the port that postgres was
+actually listening on (5433)
+
+```bash
+sudo lsof -n -u postgres | grep LISTEN
+```

@@ -8,6 +8,7 @@ int main() {
   EXEC SQL BEGIN DECLARE SECTION;
     const char *pword = getenv("POSTGRES_PASSWORD");
     const char *user = "jon";
+    const int filter = 4;
     const char *dbname = "unix:postgresql://localhost:5433/ecpg_demo";
     long long int count;
   EXEC SQL END DECLARE SECTION;  
@@ -19,7 +20,9 @@ int main() {
 
   EXEC SQL CONNECT TO :dbname USER :user USING :pword;
   printf("SQL connection executed\n");
-  EXEC SQL SELECT count(*) INTO :count FROM electricity_market;
+  EXEC SQL SELECT count(*) INTO :count
+  FROM electricity_market
+  WHERE weekday = :filter;
   printf("Total number of rows in electricity_market: %d\n", count);
   EXEC SQL DISCONNECT ALL;
   printf("SQL connected exited\n");
