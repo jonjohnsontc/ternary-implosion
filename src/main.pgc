@@ -22,6 +22,8 @@ int main() {
   printf("SQL connection executed\n");
   EXEC SQL SELECT count(*) INTO :count
   FROM electricity_market
+  JOIN electricity_providers
+    ON electricity_market.d = electricity_providers.p
   WHERE weekday = :filter;
   printf("Total number of rows in electricity_market: %d\n", count);
   EXEC SQL DISCONNECT ALL;

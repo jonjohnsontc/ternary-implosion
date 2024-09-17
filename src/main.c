@@ -57,28 +57,28 @@ if (sqlca.sqlcode < 0) sqlprint();}
 #line 21 "src/main.pgc"
 
   printf("SQL connection executed\n");
-  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "select count ( * ) from electricity_market where weekday = $1 ", 
+  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "select count ( * ) from electricity_market join electricity_providers on electricity_market . d = electricity_providers . p where weekday = $1 ", 
 	ECPGt_int,&(filter),(long)1,(long)1,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, 
 	ECPGt_long_long,&(count),(long)1,(long)1,sizeof(long long), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-#line 25 "src/main.pgc"
+#line 27 "src/main.pgc"
 
 if (sqlca.sqlwarn[0] == 'W') sqlprint();
-#line 25 "src/main.pgc"
+#line 27 "src/main.pgc"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 25 "src/main.pgc"
+#line 27 "src/main.pgc"
 
   printf("Total number of rows in electricity_market: %d\n", count);
   { ECPGdisconnect(__LINE__, "ALL");
-#line 27 "src/main.pgc"
+#line 29 "src/main.pgc"
 
 if (sqlca.sqlwarn[0] == 'W') sqlprint();
-#line 27 "src/main.pgc"
+#line 29 "src/main.pgc"
 
 if (sqlca.sqlcode < 0) sqlprint();}
-#line 27 "src/main.pgc"
+#line 29 "src/main.pgc"
 
   printf("SQL connected exited\n");
   return 0;
