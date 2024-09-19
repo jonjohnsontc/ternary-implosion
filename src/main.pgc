@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pgtypes_numeric.h>
 
 EXEC SQL WHENEVER SQLWARNING SQLPRINT; 
 EXEC SQL WHENEVER SQLERROR SQLPRINT;
@@ -11,6 +12,8 @@ int main() {
     const int filter = 4;
     const char *dbname = "unix:postgresql://localhost:5433/ecpg_demo";
     long long int count;
+    numeric *my_guy;
+    int *my_guy_ind;
   EXEC SQL END DECLARE SECTION;  
 
   if (pword == NULL) {
@@ -22,11 +25,27 @@ int main() {
   printf("SQL connection executed\n");
   EXEC SQL SELECT count(*) INTO :count
   FROM electricity_market
-  JOIN electricity_providers
-    ON electricity_market.d = electricity_providers.p
   WHERE weekday = :filter;
   printf("Total number of rows in electricity_market: %d\n", count);
+  
+  my_guy = PGTYPESnumeric_new();
+
+  // use cursors for iterating over a result set
+  EXEC SQL DECLARE thurs CURSOR FOR
+    SELECT miso_hydro_gen FROM electricity_market
+    ORDER BY miso_hydro_gen;
+  EXEC SQL OPEN thurs;
+  EXEC SQL FETCH NEXT FROM thurs INTO :my_guy INDICATOR :my_guy_ind;  
+  EXEC SQL CLOSE thurs;
+
+  // potentially NULL values need to be associated with INDICATORS
+  // else you can run into a SQL ERROR if the value is NULL 
+  if (*my_guy_ind < 0)
+    printf("miso_hydro_gen was NULL\n");
+  else
+    printf("miso_hydro_gen is %s\n", PGTYPESnumeric_to_asc(my_guy, -1));
+
   EXEC SQL DISCONNECT ALL;
-  printf("SQL connected exited\n");
+  printf("SQL connection exited\n");
   return 0;
 }
