@@ -3,7 +3,6 @@
 -- much of the data is either pricing data or # of MW generated - I picked mostly arbitrary precision
 -- numeric columns for them
 -- NOTE that the SQL standHEADERard considers numeric columns without a scale to have 0 scale, so this DDL
-
 -- is probably not portable
 create table electricity_market (
         "weekday"           smallint,

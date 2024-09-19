@@ -103,3 +103,6 @@ actually listening on (5433)
 ```bash
 sudo lsof -n -u postgres | grep LISTEN
 ```
+
+- I was also able to put together a query and retrieve results from it using a
+cursor

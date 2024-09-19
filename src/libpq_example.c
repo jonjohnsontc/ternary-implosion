@@ -1,10 +1,18 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <libpq-fe.h> // Include the libpq library
 
 int main() {
     // Connection parameters: change them to match your setup
-    const char *conninfo = "host=localhost port=5433 dbname=postgres user=postgres password=example";
-    
+    const char *pword = getenv("POSTGRES_PASSWORD");
+    if (pword == NULL) {
+      fprintf(stderr, "password not found\n");
+      exit(1);
+    }
+    char conninfo[255] = "host=localhost port=5433 dbname=ecpg_demo user=jon password=";
+    strcat(conninfo, pword);
+
     // Initialize the connection to PostgreSQL
     PGconn *conn = PQconnectdb(conninfo);
 
