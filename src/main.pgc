@@ -12,8 +12,8 @@ int main() {
     const int filter = 4;
     const char *dbname = "unix:postgresql://localhost:5433/ecpg_demo";
     long long int count;
-    numeric *my_guy;
-    int *my_guy_ind;
+    numeric *gas_gen;
+    int *gas_gen_ind;
   EXEC SQL END DECLARE SECTION;  
 
   if (pword == NULL) {
@@ -28,22 +28,22 @@ int main() {
   WHERE weekday = :filter;
   printf("Total number of rows in electricity_market: %d\n", count);
   
-  my_guy = PGTYPESnumeric_new();
+  gas_gen = PGTYPESnumeric_new();
 
   // use cursors for iterating over a result set
-  EXEC SQL DECLARE thurs CURSOR FOR
-    SELECT miso_hydro_gen FROM electricity_market
-    ORDER BY miso_hydro_gen;
-  EXEC SQL OPEN thurs;
-  EXEC SQL FETCH NEXT FROM thurs INTO :my_guy INDICATOR :my_guy_ind;  
-  EXEC SQL CLOSE thurs;
+  EXEC SQL DECLARE cur CURSOR FOR
+    SELECT miso_gas_gen FROM electricity_market
+    ORDER BY miso_gas_gen;
+  EXEC SQL OPEN cur;
+  EXEC SQL FETCH NEXT FROM cur INTO :gas_gen INDICATOR :gas_gen_ind;  
+  EXEC SQL CLOSE cur;
 
   // potentially NULL values need to be associated with INDICATORS
   // else you can run into a SQL ERROR if the value is NULL 
-  if (*my_guy_ind < 0)
-    printf("miso_hydro_gen was NULL\n");
+  if (*gas_gen_ind < 0)
+    printf("miso_gas_gen was NULL\n");
   else
-    printf("miso_hydro_gen is %s\n", PGTYPESnumeric_to_asc(my_guy, -1));
+    printf("miso_gas_gen is %s\n", PGTYPESnumeric_to_asc(gas_gen, -1));
 
   EXEC SQL DISCONNECT ALL;
   printf("SQL connection exited\n");

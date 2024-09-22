@@ -43,10 +43,10 @@ int main() {
  long long count ;
  
 #line 15 "src/main.pgc"
- numeric * my_guy ;
+ numeric * gas_gen ;
  
 #line 16 "src/main.pgc"
- int * my_guy_ind ;
+ int * gas_gen_ind ;
 /* exec sql end declare section */
 #line 17 "src/main.pgc"
   
@@ -81,13 +81,13 @@ if (sqlca.sqlcode < 0) sqlprint();}
 
   printf("Total number of rows in electricity_market: %d\n", count);
   
-  my_guy = PGTYPESnumeric_new();
+  gas_gen = PGTYPESnumeric_new();
 
   // use cursors for iterating over a result set
-  /* declare thurs cursor for select miso_hydro_gen from electricity_market order by miso_hydro_gen */
+  /* declare cur cursor for select miso_gas_gen from electricity_market order by miso_gas_gen */
 #line 36 "src/main.pgc"
 
-  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "declare thurs cursor for select miso_hydro_gen from electricity_market order by miso_hydro_gen", ECPGt_EOIT, ECPGt_EORT);
+  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "declare cur cursor for select miso_gas_gen from electricity_market order by miso_gas_gen", ECPGt_EOIT, ECPGt_EORT);
 #line 37 "src/main.pgc"
 
 if (sqlca.sqlwarn[0] == 'W') sqlprint();
@@ -96,9 +96,9 @@ if (sqlca.sqlwarn[0] == 'W') sqlprint();
 if (sqlca.sqlcode < 0) sqlprint();}
 #line 37 "src/main.pgc"
 
-  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "fetch next from thurs", ECPGt_EOIT, 
-	ECPGt_numeric,&(my_guy),(long)1,(long)0,sizeof(numeric), 
-	ECPGt_int,&(my_guy_ind),(long)1,(long)0,sizeof(int), ECPGt_EORT);
+  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "fetch next from cur", ECPGt_EOIT, 
+	ECPGt_numeric,&(gas_gen),(long)1,(long)0,sizeof(numeric), 
+	ECPGt_int,&(gas_gen_ind),(long)1,(long)0,sizeof(int), ECPGt_EORT);
 #line 38 "src/main.pgc"
 
 if (sqlca.sqlwarn[0] == 'W') sqlprint();
@@ -107,7 +107,7 @@ if (sqlca.sqlwarn[0] == 'W') sqlprint();
 if (sqlca.sqlcode < 0) sqlprint();}
 #line 38 "src/main.pgc"
   
-  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "close thurs", ECPGt_EOIT, ECPGt_EORT);
+  { ECPGdo(__LINE__, 0, 1, NULL, 0, ECPGst_normal, "close cur", ECPGt_EOIT, ECPGt_EORT);
 #line 39 "src/main.pgc"
 
 if (sqlca.sqlwarn[0] == 'W') sqlprint();
@@ -117,12 +117,12 @@ if (sqlca.sqlcode < 0) sqlprint();}
 #line 39 "src/main.pgc"
 
 
-  if (*my_guy_ind < 0)
-    printf("miso_hydro_gen was NULL\n");
+  // potentially NULL values need to be associated with INDICATORS
+  // else you can run into a SQL ERROR if the value is NULL 
+  if (*gas_gen_ind < 0)
+    printf("miso_gas_gen was NULL\n");
   else
-    printf("miso_hydro_gen is %s\n", PGTYPESnumeric_to_asc(my_guy, -1));
-
-
+    printf("miso_gas_gen is %s\n", PGTYPESnumeric_to_asc(gas_gen, -1));
 
   { ECPGdisconnect(__LINE__, "ALL");
 #line 48 "src/main.pgc"

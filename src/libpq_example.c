@@ -26,7 +26,8 @@ int main() {
     printf("Connected to database successfully.\n");
 
     // Execute a simple query (getting the PostgreSQL version)
-    PGresult *res = PQexec(conn, "SELECT version();");
+    // PGresult *res = PQexec(conn, "SELECT version();");
+    PGresult *res = PQexec(conn, "SELECT count(*) from electricity_market"); 
 
     // Check if the query was successful
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
